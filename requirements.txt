@@ -13,3 +13,5 @@ uvicorn
 streamlit
 plotly
 python-multipart
+jupyter
+notebook
