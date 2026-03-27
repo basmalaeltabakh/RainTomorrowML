@@ -239,7 +239,7 @@ RainTomorrowML/
 
 ##  Dataset
 
-- **Source:** [Rain in Australia — Kaggle]([https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package](https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package))
+- **Source:** [![Kaggle Dataset](https://img.shields.io/badge/Kaggle-Rain%20in%20Australia-20BEFF?logo=kaggle)](https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package)
 - **Size:** 145,460 rows × 23 columns
 - **Period:** 2008 – 2017
 - **Locations:** 49 weather stations across Australia
