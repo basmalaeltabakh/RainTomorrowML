@@ -9,7 +9,16 @@ from src.predict import predict_batch
 from src.config import MODELS_DIR
 
 st.set_page_config(page_title="Batch Prediction", page_icon="📂", layout="wide")
-st.title("📂 Batch Prediction")
+
+from app.ui_utils import apply_custom_css, update_plotly_layout, style_dataframe
+apply_custom_css()
+
+st.markdown("""
+<div class="header-container">
+    <div class="header-title">📂 Batch Prediction</div>
+    <div class="header-subtitle">Run predictions on multiple rows of data via CSV upload</div>
+</div>
+""", unsafe_allow_html=True)
 
 available_models = [
     p.stem for p in MODELS_DIR.glob("*.pkl")
@@ -23,7 +32,7 @@ uploaded = st.file_uploader("Upload CSV", type=['csv'])
 
 if uploaded:
     df_raw = pd.read_csv(uploaded)
-    st.subheader("Preview — Uploaded Data")
+    st.markdown('<div class="section-header">Preview — Uploaded Data</div>', unsafe_allow_html=True)
     st.dataframe(df_raw.head(10), use_container_width=True)
     st.write(f"Shape: {df_raw.shape}")
 
@@ -68,6 +77,7 @@ if uploaded:
                 color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
                 title="Prediction Distribution", hole=0.4
             )
+            fig = update_plotly_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
@@ -77,14 +87,14 @@ if uploaded:
                 color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
                 title="Probability Distribution"
             )
+            fig = update_plotly_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
 
         # ── Table
-        st.subheader("Results Table")
-        st.dataframe(
-            result_df[['Prediction','Probability','Label']],
-            use_container_width=True
-        )
+        st.markdown('<div class="section-header">Results Table</div>', unsafe_allow_html=True)
+        display_df = result_df[['Prediction','Probability','Label']].copy()
+        styled_table = style_dataframe(display_df).to_html()
+        st.markdown(styled_table, unsafe_allow_html=True)
 
         # ── Download
         csv = result_df.to_csv(index=False).encode('utf-8')

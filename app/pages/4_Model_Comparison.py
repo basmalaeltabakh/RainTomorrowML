@@ -12,7 +12,16 @@ from sklearn.metrics import roc_curve, confusion_matrix, ConfusionMatrixDisplay
 from src.config import MODELS_DIR
 
 st.set_page_config(page_title="Model Comparison", page_icon="🏆", layout="wide")
-st.title("🏆 Model Comparison")
+
+from app.ui_utils import apply_custom_css, update_plotly_layout, style_dataframe
+apply_custom_css()
+
+st.markdown("""
+<div class="header-container">
+    <div class="header-title">🏆 Model Comparison</div>
+    <div class="header-subtitle">Compare performance and evaluation metrics</div>
+</div>
+""", unsafe_allow_html=True)
 
 # ── Load results ──────────────────────────────────────────────
 @st.cache_data
@@ -31,16 +40,14 @@ results_df         = load_results()
 X_test, y_test     = load_test_data()
 
 # ── Leaderboard ───────────────────────────────────────────────
-st.subheader("🥇 Leaderboard")
-styled = results_df.style.background_gradient(
-    subset=['accuracy','f1','roc_auc'], cmap='Blues'
-).format({'accuracy':'{:.4f}','f1':'{:.4f}','roc_auc':'{:.4f}'})
-st.dataframe(styled, use_container_width=True)
+st.markdown('<div class="section-header">🥇 Leaderboard</div>', unsafe_allow_html=True)
+styled = style_dataframe(results_df).format({'accuracy':'{:.4f}','f1':'{:.4f}','roc_auc':'{:.4f}'})
+st.markdown(styled.to_html(), unsafe_allow_html=True)
 
 st.divider()
 
 # ── Metrics bar chart ─────────────────────────────────────────
-st.subheader("📊 Metrics Comparison")
+st.markdown('<div class="section-header">📊 Metrics Comparison</div>', unsafe_allow_html=True)
 metric = st.radio("Select Metric", ['roc_auc','f1','accuracy'], horizontal=True)
 
 fig = px.bar(
@@ -52,12 +59,13 @@ fig = px.bar(
     labels={metric: metric.upper(), 'model': 'Model'}
 )
 fig.update_traces(textposition='outside')
+fig = update_plotly_layout(fig)
 st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
 # ── ROC Curves ────────────────────────────────────────────────
-st.subheader("📈 ROC Curves — All Models")
+st.markdown('<div class="section-header">📈 ROC Curves — All Models</div>', unsafe_allow_html=True)
 fig_roc = go.Figure()
 colors  = px.colors.qualitative.Plotly
 
@@ -79,12 +87,13 @@ fig_roc.update_layout(
     yaxis_title='True Positive Rate',
     height=500
 )
+fig_roc = update_plotly_layout(fig_roc)
 st.plotly_chart(fig_roc, use_container_width=True)
 
 st.divider()
 
 # ── Confusion Matrix ──────────────────────────────────────────
-st.subheader("🔲 Confusion Matrix")
+st.markdown('<div class="section-header">🔲 Confusion Matrix</div>', unsafe_allow_html=True)
 selected = st.selectbox("Select Model", results_df['model'].tolist())
 
 mdl    = load_model(selected)
@@ -97,5 +106,6 @@ fig_cm = px.imshow(
     labels=dict(x='Predicted', y='Actual'),
     title=f'Confusion Matrix — {selected}'
 )
-fig_cm.update_layout(height=400, width=400)
+fig_cm = update_plotly_layout(fig_cm)
+fig_cm.update_layout(height=450, width=450)
 st.plotly_chart(fig_cm)
