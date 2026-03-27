@@ -1,0 +1,17 @@
+# Streamlit Cloud Deployment Configuration
+# Place this file in the root of your repository
+[[apps]]
+title = "RainTomorrowML Dashboard"
+script = "app/main.py"
+showAppMenu = true
+showSidebarNavigation = true
+
+[client]
+showErrorDetails = true
+
+[logger]
+level = "info"
+
+[server]
+enableXsrfProtection = true
+maxUploadSize = 200
