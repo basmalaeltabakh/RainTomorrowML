@@ -1,0 +1,9 @@
+model,type,accuracy,f1,roc_auc
+LightGBM,Boosting,0.8193,0.6581,0.8954
+XGBoost,Boosting,0.8136,0.6517,0.8901
+RandomForest,Bagging,0.8412,0.6566,0.8872
+CatBoost,Boosting,0.8055,0.6409,0.8863
+GradientBoosting,Boosting,0.86,0.626,0.8852
+BaggingDT,Bagging,0.8179,0.642,0.8774
+ExtraTrees,Bagging,0.8051,0.6284,0.8732
+AdaBoost,Boosting,0.8513,0.5925,0.8708
