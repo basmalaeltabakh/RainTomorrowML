@@ -12,38 +12,19 @@ from src.config import DATA_RAW
 
 st.set_page_config(page_title="EDA Dashboard", page_icon="📊", layout="wide")
 
+from app.ui_utils import apply_custom_css, update_plotly_layout
+apply_custom_css()
+
 # ────────────────────────────────────────────────────────────────────────
 # Custom CSS
 # ────────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-    .metric-card {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 4px solid #2563eb;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    .section-header {
-        font-size: 22px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-top: 25px;
-        margin-bottom: 15px;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 10px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # ────────────────────────────────────────────────────────────────────────
 # Header
 # ────────────────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
-    <h1 style="margin: 0; font-size: 36px;">📊 Data Exploration Dashboard</h1>
-    <p style="margin: 10px 0 0 0; opacity: 0.95;">Analyze weather patterns across Australia (2008-2017)</p>
+<div class="header-container">
+    <div class="header-title">📊 Data Exploration Dashboard</div>
+    <div class="header-subtitle">Analyze weather patterns across Australia (2008-2017)</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -143,7 +124,7 @@ with col1:
         height=350,
     )
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    fig_pie.update_layout(paper_bgcolor='white', plot_bgcolor='white')
+    fig_pie = update_plotly_layout(fig_pie)
     st.plotly_chart(fig_pie, use_container_width=True, key='rain_dist_chart')
 
 with col2:
@@ -165,9 +146,8 @@ with col2:
         labels={'RainRate': 'Rain Probability (%)'},
         height=350,
     )
+    fig_bar = update_plotly_layout(fig_bar)
     fig_bar.update_layout(
-        paper_bgcolor='white',
-        plot_bgcolor='white',
         hovermode='closest',
         showlegend=False,
     )
@@ -191,7 +171,7 @@ with col1:
         labels={'MaxTemp': 'Max Temperature (°C)', 'count': 'Frequency'},
         height=350,
     )
-    fig_temp.update_layout(paper_bgcolor='white', plot_bgcolor='white')
+    fig_temp = update_plotly_layout(fig_temp)
     st.plotly_chart(fig_temp, use_container_width=True, key='maxtemp_hist_chart')
 
 with col2:
@@ -205,7 +185,8 @@ with col2:
         color_discrete_map={'Yes': '#3b82f6', 'No': '#10b981'},
         height=350,
     )
-    fig_temp_rain.update_layout(paper_bgcolor='white', plot_bgcolor='white', showlegend=False)
+    fig_temp_rain = update_plotly_layout(fig_temp_rain)
+    fig_temp_rain.update_layout(showlegend=False)
     st.plotly_chart(fig_temp_rain, use_container_width=True, key='temp_rain_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -226,7 +207,7 @@ with col1:
         labels={'Rainfall': 'Rainfall (mm)', 'count': 'Frequency'},
         height=350,
     )
-    fig_rain.update_layout(paper_bgcolor='white', plot_bgcolor='white')
+    fig_rain = update_plotly_layout(fig_rain)
     st.plotly_chart(fig_rain, use_container_width=True, key='rainfall_hist_chart')
 
 with col2:
@@ -243,7 +224,8 @@ with col2:
         labels={'Rainfall': 'Average Rainfall (mm)'},
         height=350,
     )
-    fig_loc_rain.update_layout(paper_bgcolor='white', plot_bgcolor='white', showlegend=False)
+    fig_loc_rain = update_plotly_layout(fig_loc_rain)
+    fig_loc_rain.update_layout(showlegend=False)
     st.plotly_chart(fig_loc_rain, use_container_width=True, key='location_rain_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -263,12 +245,11 @@ with col1:
             name=label,
             marker_color='#3b82f6' if rain_val == 'Yes' else '#10b981'
         ))
+    fig_humid = update_plotly_layout(fig_humid)
     fig_humid.update_layout(
         title='Humidity Levels by Rain Occurrence',
         yaxis_title='Humidity 9am (%)',
         height=350,
-        paper_bgcolor='white',
-        plot_bgcolor='white',
     )
     st.plotly_chart(fig_humid, use_container_width=True, key='humidity_rain_chart')
 
@@ -283,7 +264,7 @@ with col2:
         labels={'WindGustSpeed': 'Wind Gust Speed (km/h)', 'count': 'Frequency'},
         height=350,
     )
-    fig_wind.update_layout(paper_bgcolor='white', plot_bgcolor='white')
+    fig_wind = update_plotly_layout(fig_wind)
     st.plotly_chart(fig_wind, use_container_width=True, key='windspeed_hist_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -306,7 +287,7 @@ fig_heatmap = px.imshow(
     height=450,
     labels=dict(color='Correlation')
 )
-fig_heatmap.update_layout(paper_bgcolor='white')
+fig_heatmap = update_plotly_layout(fig_heatmap)
 st.plotly_chart(fig_heatmap, use_container_width=True, key='corr_heatmap_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -331,7 +312,8 @@ fig_loc = px.bar(
     labels={'RainRate': 'Rain Probability (%)'},
     height=600,
 )
-fig_loc.update_layout(paper_bgcolor='white', plot_bgcolor='white', showlegend=False)
+fig_loc = update_plotly_layout(fig_loc)
+fig_loc.update_layout(showlegend=False)
 st.plotly_chart(fig_loc, use_container_width=True, key='location_rain_prob_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -356,6 +338,7 @@ with col1:
         hole=0.4
     )
     fig.update_traces(textposition='inside', textinfo='percent+label')
+    fig = update_plotly_layout(fig)
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
@@ -372,6 +355,7 @@ with col2:
         color='RainRate', color_continuous_scale='Blues',
         labels={'RainRate': 'Rain Rate (%)'}
     )
+    fig = update_plotly_layout(fig)
     st.plotly_chart(fig, use_container_width=True)
 
 # ── Numerical distributions ───────────────────────────────────
@@ -384,9 +368,9 @@ fig = px.histogram(
     dff.dropna(subset=[selected_col]),
     x=selected_col, color='RainTomorrow',
     barmode='overlay', nbins=50, opacity=0.7,
-    color_discrete_map={'Yes': '#2563EB', 'No': '#DC2626'},
     labels={'RainTomorrow': 'Rain Tomorrow'}
 )
+fig = update_plotly_layout(fig)
 st.plotly_chart(fig, use_container_width=True)
 
 # ── Correlation heatmap ───────────────────────────────────────
@@ -396,6 +380,7 @@ fig = px.imshow(
     num_df, text_auto=True, color_continuous_scale='RdBu_r',
     zmin=-1, zmax=1, aspect='auto'
 )
+fig = update_plotly_layout(fig)
 fig.update_layout(height=500)
 st.plotly_chart(fig, use_container_width=True)
 
@@ -412,5 +397,6 @@ fig = px.bar(
     color_continuous_scale='Blues',
     labels={'RainRate': 'Rain Rate (%)'}
 )
+fig = update_plotly_layout(fig)
 fig.update_layout(height=600)
 st.plotly_chart(fig, use_container_width=True)

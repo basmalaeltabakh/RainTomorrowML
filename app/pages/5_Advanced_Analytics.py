@@ -14,38 +14,16 @@ from src.predict import predict_batch
 
 st.set_page_config(page_title="Advanced Analytics", page_icon="📈", layout="wide")
 
-# ────────────────────────────────────────────────────────────────────────
-# Custom CSS
-# ────────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-    .section-header {
-        font-size: 24px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-top: 30px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 12px;
-    }
-
-    .info-box {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        padding: 16px;
-        border-radius: 8px;
-        border-left: 4px solid #3b82f6;
-        margin-bottom: 12px;
-    }
-</style>
-""", unsafe_allow_html=True)
+from app.ui_utils import apply_custom_css, update_plotly_layout
+apply_custom_css()
 
 # ────────────────────────────────────────────────────────────────────────
 # Header
 # ────────────────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px;">
-    <h1 style="margin: 0; font-size: 36px;">📈 Advanced Analytics</h1>
-    <p style="margin: 10px 0 0 0; opacity: 0.95;">Deep dive into model performance and predictions</p>
+<div class="header-container">
+    <div class="header-title">📈 Advanced Analytics</div>
+    <div class="header-subtitle">Deep dive into model performance and predictions</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -104,41 +82,41 @@ if analysis_type == "Model Metrics":
 
     with col1:
         st.markdown(f"""
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase;">Accuracy</div>
-            <div style="color: #0f172a; font-size: 28px; font-weight: 700; margin-top: 8px;">{accuracy:.2%}</div>
+        <div class="metric-card" style="border-left-color: #10b981;">
+            <div class="metric-label">Accuracy</div>
+            <div class="metric-value">{accuracy:.2%}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"""
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase;">Precision</div>
-            <div style="color: #0f172a; font-size: 28px; font-weight: 700; margin-top: 8px;">{precision:.2%}</div>
+        <div class="metric-card" style="border-left-color: #3b82f6;">
+            <div class="metric-label">Precision</div>
+            <div class="metric-value">{precision:.2%}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown(f"""
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase;">Recall</div>
-            <div style="color: #0f172a; font-size: 28px; font-weight: 700; margin-top: 8px;">{recall:.2%}</div>
+        <div class="metric-card" style="border-left-color: #f59e0b;">
+            <div class="metric-label">Recall</div>
+            <div class="metric-value">{recall:.2%}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col4:
         st.markdown(f"""
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #8b5cf6; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase;">F1-Score</div>
-            <div style="color: #0f172a; font-size: 28px; font-weight: 700; margin-top: 8px;">{f1:.4f}</div>
+        <div class="metric-card" style="border-left-color: #8b5cf6;">
+            <div class="metric-label">F1-Score</div>
+            <div class="metric-value">{f1:.4f}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with col5:
         st.markdown(f"""
-        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #ec4899; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <div style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase;">ROC-AUC</div>
-            <div style="color: #0f172a; font-size: 28px; font-weight: 700; margin-top: 8px;">{auc:.4f}</div>
+        <div class="metric-card" style="border-left-color: #ec4899;">
+            <div class="metric-label">ROC-AUC</div>
+            <div class="metric-value">{auc:.4f}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -162,15 +140,7 @@ if analysis_type == "Model Metrics":
         line=dict(color='#94a3b8', width=2, dash='dash'),
         hovertemplate='FPR: %{x:.3f}<br>TPR: %{y:.3f}<extra></extra>'
     ))
-    fig_roc.update_layout(
-        title='ROC Curve',
-        xaxis_title='False Positive Rate',
-        yaxis_title='True Positive Rate',
-        height=500,
-        hovermode='closest',
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-    )
+    fig_roc = update_plotly_layout(fig_roc)
     st.plotly_chart(fig_roc, use_container_width=True, key='roc_curve_chart')
 
     # Confusion Matrix
@@ -188,12 +158,7 @@ if analysis_type == "Model Metrics":
         textfont=dict(size=16, color='white'),
         hovertemplate='%{y}<br>%{x}<br>Count: %{z}<extra></extra>'
     ))
-    fig_cm.update_layout(
-        title='Confusion Matrix',
-        height=400,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-    )
+    fig_cm = update_plotly_layout(fig_cm)
     st.plotly_chart(fig_cm, use_container_width=True, key='confusion_matrix_chart')
 
 # ────────────────────────────────────────────────────────────────────────
@@ -217,18 +182,14 @@ elif analysis_type == "Predictions Heatmap":
             color_discrete_sequence=['#3b82f6'],
             height=400,
         )
-        fig_hist.update_layout(
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            hovermode='closest',
-        )
+        fig_hist = update_plotly_layout(fig_hist)
         st.plotly_chart(fig_hist, use_container_width=True, key='pred_hist_chart')
 
     with col2:
         # Statistics
         st.markdown("""
-        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="margin-top: 0;">Prediction Statistics</h3>
+        <div class="section-header" style="margin-top: 0; margin-bottom: 20px;">
+            Prediction Statistics
         </div>
         """, unsafe_allow_html=True)
 
@@ -267,11 +228,7 @@ elif analysis_type == "Feature Importance":
             color_continuous_scale='Blues',
             height=500,
         )
-        fig.update_layout(
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            hovermode='closest',
-        )
+        fig = update_plotly_layout(fig)
         st.plotly_chart(fig, use_container_width=True, key='feature_importance_chart')
     else:
         st.info("Feature importance not available for this model type")
@@ -330,10 +287,7 @@ elif analysis_type == "Error Analysis":
         height=450,
         hover_data={'Count': ':,'}
     )
-    fig_pie.update_layout(
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-    )
+    fig_pie = update_plotly_layout(fig_pie)
     st.plotly_chart(fig_pie, use_container_width=True, key='error_pie_chart')
 
 # ────────────────────────────────────────────────────────────────────────

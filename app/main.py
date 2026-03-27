@@ -19,180 +19,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+from app.ui_utils import apply_custom_css, update_plotly_layout, style_dataframe
+apply_custom_css()
 # ────────────────────────────────────────────────────────────────────────
-# Custom CSS Styling
+# Removed Custom CSS block - Now using app.ui_utils
 # ────────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-    :root {
-        --primary-color: #2563eb;
-        --secondary-color: #1e40af;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --dark-bg: #0f172a;
-        --card-bg: #1e293b;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
-    [data-testid="stMetricValue"] {
-        font-size: 32px;
-        font-weight: 700;
-    }
-
-    [data-testid="stMetricLabel"] {
-        font-size: 14px;
-        color: #64748b;
-        font-weight: 600;
-    }
-
-    /* Main container */
-    .main {
-        background-color: #f8fafc;
-    }
-
-    /* Header Styling */
-    .header-container {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        color: white;
-        padding: 40px 20px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
-    }
-
-    .header-title {
-        font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 10px;
-    }
-
-    .header-subtitle {
-        font-size: 16px;
-        opacity: 0.95;
-        font-weight: 500;
-    }
-
-    /* Metric Cards */
-    .metric-card {
-        background: white;
-        padding: 24px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        border-left: 4px solid #2563eb;
-        transition: all 0.3s ease;
-    }
-
-    .metric-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
-    }
-
-    .metric-label {
-        color: #64748b;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-    }
-
-    .metric-value {
-        color: #0f172a;
-        font-size: 32px;
-        font-weight: 700;
-    }
-
-    .metric-suffix {
-        color: #94a3b8;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    /* Section Headers */
-    .section-header {
-        font-size: 24px;
-        font-weight: 700;
-        color: #0f172a;
-        margin-top: 30px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 12px;
-    }
-
-    /* Card Container */
-    .card-container {
-        background: white;
-        padding: 24px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        margin-bottom: 20px;
-    }
-
-    /* Stats Grid */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-    }
-
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
-        color: white;
-    }
-
-    /* Button Styling */
-    .stButton > button {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 24px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-
-    /* Badge Styling */
-    .badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        margin-right: 8px;
-    }
-
-    .badge-success {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-
-    .badge-info {
-        background-color: #dbeafe;
-        color: #0c4a6e;
-    }
-
-    .badge-warning {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────────────────────────────
 # Header
@@ -281,12 +112,10 @@ with col1:
         hover_data={'accuracy': ':.2%', 'f1': ':.4f'},
     )
     fig.update_traces(textposition='outside', texttemplate='%{text:.4f}')
+    fig = update_plotly_layout(fig)
     fig.update_layout(
         showlegend=False,
         hovermode='closest',
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(family='Arial', size=12),
         margin=dict(l=0, r=0, t=40, b=0),
     )
     st.plotly_chart(fig, use_container_width=True, key='top_models_chart')
@@ -312,22 +141,15 @@ st.markdown('<div class="section-header">📊 Detailed Metrics Table</div>', uns
 
 # Format and display results
 results_display = results_df.copy()
-results_display['accuracy'] = results_display['accuracy'].apply(lambda x: f"{x:.2%}")
-results_display['f1'] = results_display['f1'].apply(lambda x: f"{x:.4f}")
-results_display['roc_auc'] = results_display['roc_auc'].apply(lambda x: f"{x:.4f}")
+results_display = results_display[['model', 'type', 'accuracy', 'f1', 'roc_auc']]
+results_display.columns = ['Model Name', 'Type', 'Accuracy', 'F1-Score', 'ROC-AUC']
+results_display['Accuracy'] = results_display['Accuracy'].apply(lambda x: f"{x:.2%}")
+results_display['F1-Score'] = results_display['F1-Score'].apply(lambda x: f"{x:.4f}")
+results_display['ROC-AUC'] = results_display['ROC-AUC'].apply(lambda x: f"{x:.4f}")
+results_display = results_display.set_index('Model Name')
 
-st.dataframe(
-    results_display,
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        'model': st.column_config.TextColumn('Model Name', width=150),
-        'type': st.column_config.TextColumn('Type', width=120),
-        'accuracy': st.column_config.TextColumn('Accuracy', width=120),
-        'f1': st.column_config.TextColumn('F1-Score', width=120),
-        'roc_auc': st.column_config.TextColumn('ROC-AUC', width=120),
-    }
-)
+styled_table = style_dataframe(results_display).to_html()
+st.markdown(styled_table, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────────────────────────────
 # Model Distribution
@@ -348,12 +170,11 @@ with col1:
         textinfo='label+value+percent',
         hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
     )])
+    fig_pie = update_plotly_layout(fig_pie)
     fig_pie.update_layout(
         title='Models by Type',
         height=400,
         showlegend=True,
-        paper_bgcolor='white',
-        font=dict(family='Arial', size=12),
     )
     st.plotly_chart(fig_pie, use_container_width=True, key='model_type_chart')
 
@@ -368,11 +189,9 @@ with col2:
         title='ROC-AUC Distribution by Type',
         height=400,
     )
+    fig_metrics = update_plotly_layout(fig_metrics)
     fig_metrics.update_layout(
         showlegend=False,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(family='Arial', size=12),
         hovermode='closest',
     )
     st.plotly_chart(fig_metrics, use_container_width=True, key='auc_distribution_chart')
