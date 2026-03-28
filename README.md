@@ -12,7 +12,7 @@
 
   <br><br>
 
-  <a href="YOUR_STREAMLIT_LINK">
+  <a href="https://raintomorrowml-bu9xwfqb7gyjmb57px9xru.streamlit.app/">
     <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit">
   </a>
 
