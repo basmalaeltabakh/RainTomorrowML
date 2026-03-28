@@ -158,7 +158,7 @@ if analysis_type == "Model Metrics":
         hovertemplate='FPR: %{x:.3f}<br>TPR: %{y:.3f}<extra></extra>'
     ))
     fig_roc = update_plotly_layout(fig_roc)
-    st.plotly_chart(fig_roc, use_container_width=True, key='roc_curve_chart')
+    st.plotly_chart(fig_roc, width='stretch', key='roc_curve_chart')
 
     # Confusion Matrix
     st.markdown('<div class="section-header">Confusion Matrix</div>', unsafe_allow_html=True)
@@ -176,7 +176,7 @@ if analysis_type == "Model Metrics":
         hovertemplate='%{y}<br>%{x}<br>Count: %{z}<extra></extra>'
     ))
     fig_cm = update_plotly_layout(fig_cm)
-    st.plotly_chart(fig_cm, use_container_width=True, key='confusion_matrix_chart')
+    st.plotly_chart(fig_cm, width='stretch', key='confusion_matrix_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # TAB 2: Predictions Heatmap
@@ -203,7 +203,7 @@ elif analysis_type == "Predictions Heatmap":
                 height=400,
             )
             fig_hist = update_plotly_layout(fig_hist)
-            st.plotly_chart(fig_hist, use_container_width=True, key='pred_hist_chart')
+            st.plotly_chart(fig_hist, width='stretch', key='pred_hist_chart')
         else:
             st.write("Histogram visualization requires plotly")
 
@@ -253,7 +253,7 @@ elif analysis_type == "Feature Importance":
             height=500,
         )
         fig = update_plotly_layout(fig)
-        st.plotly_chart(fig, use_container_width=True, key='feature_importance_chart')
+        st.plotly_chart(fig, width='stretch', key='feature_importance_chart')
     else:
         st.info("Feature importance not available for this model type")
 
@@ -313,7 +313,7 @@ elif analysis_type == "Error Analysis":
         hover_data={'Count': ':,'}
     )
     fig_pie = update_plotly_layout(fig_pie)
-    st.plotly_chart(fig_pie, use_container_width=True, key='error_pie_chart')
+    st.plotly_chart(fig_pie, width='stretch', key='error_pie_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Footer
@@ -324,3 +324,4 @@ st.markdown("""
     <p>Advanced Analytics Dashboard • Model: """ + model_name + """</p>
 </div>
 """, unsafe_allow_html=True)
+

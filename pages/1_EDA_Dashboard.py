@@ -142,7 +142,7 @@ with col1:
     )
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     fig_pie = update_plotly_layout(fig_pie)
-    st.plotly_chart(fig_pie, use_container_width=True, key='rain_dist_chart')
+    st.plotly_chart(fig_pie, width='stretch', key='rain_dist_chart')
 
 with col2:
     monthly = dff.groupby('Month')['RainTomorrow'].apply(
@@ -168,7 +168,7 @@ with col2:
         hovermode='closest',
         showlegend=False,
     )
-    st.plotly_chart(fig_bar, use_container_width=True, key='monthly_rain_chart')
+    st.plotly_chart(fig_bar, width='stretch', key='monthly_rain_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Temperature Analysis
@@ -189,7 +189,7 @@ with col1:
         height=350,
     )
     fig_temp = update_plotly_layout(fig_temp)
-    st.plotly_chart(fig_temp, use_container_width=True, key='maxtemp_hist_chart')
+    st.plotly_chart(fig_temp, width='stretch', key='maxtemp_hist_chart')
 
 with col2:
     # Temp by rain
@@ -204,7 +204,7 @@ with col2:
     )
     fig_temp_rain = update_plotly_layout(fig_temp_rain)
     fig_temp_rain.update_layout(showlegend=False)
-    st.plotly_chart(fig_temp_rain, use_container_width=True, key='temp_rain_chart')
+    st.plotly_chart(fig_temp_rain, width='stretch', key='temp_rain_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Rainfall Analysis
@@ -225,7 +225,7 @@ with col1:
         height=350,
     )
     fig_rain = update_plotly_layout(fig_rain)
-    st.plotly_chart(fig_rain, use_container_width=True, key='rainfall_hist_chart')
+    st.plotly_chart(fig_rain, width='stretch', key='rainfall_hist_chart')
 
 with col2:
     # Rainfall by location (top 10)
@@ -243,7 +243,7 @@ with col2:
     )
     fig_loc_rain = update_plotly_layout(fig_loc_rain)
     fig_loc_rain.update_layout(showlegend=False)
-    st.plotly_chart(fig_loc_rain, use_container_width=True, key='location_rain_chart')
+    st.plotly_chart(fig_loc_rain, width='stretch', key='location_rain_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Humidity & Wind Analysis
@@ -268,7 +268,7 @@ with col1:
         yaxis_title='Humidity 9am (%)',
         height=350,
     )
-    st.plotly_chart(fig_humid, use_container_width=True, key='humidity_rain_chart')
+    st.plotly_chart(fig_humid, width='stretch', key='humidity_rain_chart')
 
 with col2:
     # Wind speed distribution
@@ -282,7 +282,7 @@ with col2:
         height=350,
     )
     fig_wind = update_plotly_layout(fig_wind)
-    st.plotly_chart(fig_wind, use_container_width=True, key='windspeed_hist_chart')
+    st.plotly_chart(fig_wind, width='stretch', key='windspeed_hist_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Correlation Heatmap
@@ -305,7 +305,7 @@ fig_heatmap = px.imshow(
     labels=dict(color='Correlation')
 )
 fig_heatmap = update_plotly_layout(fig_heatmap)
-st.plotly_chart(fig_heatmap, use_container_width=True, key='corr_heatmap_chart')
+st.plotly_chart(fig_heatmap, width='stretch', key='corr_heatmap_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Rain by Location
@@ -331,7 +331,7 @@ fig_loc = px.bar(
 )
 fig_loc = update_plotly_layout(fig_loc)
 fig_loc.update_layout(showlegend=False)
-st.plotly_chart(fig_loc, use_container_width=True, key='location_rain_prob_chart')
+st.plotly_chart(fig_loc, width='stretch', key='location_rain_prob_chart')
 
 # ────────────────────────────────────────────────────────────────────────
 # Footer
@@ -356,7 +356,7 @@ with col1:
     )
     fig.update_traces(textposition='inside', textinfo='percent+label')
     fig = update_plotly_layout(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.subheader("Rain Rate by Month")
@@ -373,7 +373,7 @@ with col2:
         labels={'RainRate': 'Rain Rate (%)'}
     )
     fig = update_plotly_layout(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # ── Numerical distributions ───────────────────────────────────
 st.subheader("Feature Distributions by Rain")
@@ -388,7 +388,7 @@ fig = px.histogram(
     labels={'RainTomorrow': 'Rain Tomorrow'}
 )
 fig = update_plotly_layout(fig)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 # ── Correlation heatmap ───────────────────────────────────────
 st.subheader("Correlation Heatmap")
@@ -399,7 +399,7 @@ fig = px.imshow(
 )
 fig = update_plotly_layout(fig)
 fig.update_layout(height=500)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 # ── Rain by location ──────────────────────────────────────────
 st.subheader("Rain Rate by Location")
@@ -416,4 +416,4 @@ fig = px.bar(
 )
 fig = update_plotly_layout(fig)
 fig.update_layout(height=600)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')

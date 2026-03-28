@@ -139,11 +139,11 @@ with col1:
             hovermode='closest',
             margin=dict(l=0, r=0, t=40, b=0),
         )
-        st.plotly_chart(fig, use_container_width=True, key='top_models_chart')
+        st.plotly_chart(fig, width='stretch', key='top_models_chart')
     else:
         top_models = results_df.nlargest(5, 'roc_auc')
         st.write("**Top 5 Models by ROC-AUC:**")
-        st.dataframe(top_models[['model', 'roc_auc', 'accuracy', 'f1']], use_container_width=True)
+        st.dataframe(top_models[['model', 'roc_auc', 'accuracy', 'f1']], width='stretch')
 
 with col2:
     st.markdown("""
@@ -168,7 +168,7 @@ results_display['Accuracy'] = results_display['Accuracy'].apply(lambda x: f"{x:.
 results_display['F1-Score'] = results_display['F1-Score'].apply(lambda x: f"{x:.4f}")
 results_display['ROC-AUC'] = results_display['ROC-AUC'].apply(lambda x: f"{x:.4f}")
 
-st.dataframe(results_display, use_container_width=True)
+st.dataframe(results_display, width='stretch')
 
 # ────────────────────────────────────────────────────────────────────────
 # Model Distribution (Fallback if Plotly not available)
@@ -190,7 +190,7 @@ with col1:
         )])
         fig_pie = update_plotly_layout(fig_pie)
         fig_pie.update_layout(title='Models by Type', height=350)
-        st.plotly_chart(fig_pie, use_container_width=True, key='model_type_chart')
+        st.plotly_chart(fig_pie, width='stretch', key='model_type_chart')
     else:
         type_counts = results_df['type'].value_counts()
         st.write("**Models by Type:**")
@@ -210,7 +210,7 @@ with col2:
         )
         fig_metrics = update_plotly_layout(fig_metrics)
         fig_metrics.update_layout(showlegend=False)
-        st.plotly_chart(fig_metrics, use_container_width=True, key='auc_distribution_chart')
+        st.plotly_chart(fig_metrics, width='stretch', key='auc_distribution_chart')
     else:
         st.write("**ROC-AUC by Type:**")
         type_auc = results_df.groupby('type')['roc_auc'].apply(list)
@@ -235,19 +235,19 @@ st.markdown('### 🚀 Quick Navigation', unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    if st.button('📊 EDA Dashboard', use_container_width=True, key='nav_eda'):
+    if st.button('📊 EDA Dashboard', width='stretch', key='nav_eda'):
         st.switch_page("pages/1_EDA_Dashboard.py")
 
 with col2:
-    if st.button('🔮 Single Prediction', use_container_width=True, key='nav_single'):
+    if st.button('🔮 Single Prediction', width='stretch', key='nav_single'):
         st.switch_page("pages/2_Single_Prediction.py")
 
 with col3:
-    if st.button('📂 Batch Predictions', use_container_width=True, key='nav_batch'):
+    if st.button('📂 Batch Predictions', width='stretch', key='nav_batch'):
         st.switch_page("pages/3_Batch_Prediction.py")
 
 with col4:
-    if st.button('🏆 Model Comparison', use_container_width=True, key='nav_comparison'):
+    if st.button('🏆 Model Comparison', width='stretch', key='nav_comparison'):
         st.switch_page("pages/4_Model_Comparison.py")
 
 # ────────────────────────────────────────────────────────────────────────
