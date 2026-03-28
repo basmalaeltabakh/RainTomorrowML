@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import joblib
+import pickle
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import OrdinalEncoder
 from src.config import (
@@ -91,7 +91,8 @@ def encode(df: pd.DataFrame, fit: bool = True) -> pd.DataFrame:
 
         # Save location mean map
         loc_map = df.groupby('Location')[TARGET].mean().to_dict()
-        joblib.dump(loc_map, MODELS_DIR / 'location_map.pkl')
+        with open(MODELS_DIR / 'location_map.pkl', 'wb') as f:
+            pickle.dump(loc_map, f)
 
         # ── Ordinal encoding — wind + season
         oe_wind   = OrdinalEncoder(
@@ -104,13 +105,18 @@ def encode(df: pd.DataFrame, fit: bool = True) -> pd.DataFrame:
             oe_wind.fit_transform(df[CAT_WIND_COLS])
         df['Season_enc'] = oe_season.fit_transform(df[['Season']])
 
-        joblib.dump(oe_wind,   MODELS_DIR / 'oe_wind.pkl')
-        joblib.dump(oe_season, MODELS_DIR / 'oe_season.pkl')
+        with open(MODELS_DIR / 'oe_wind.pkl', 'wb') as f:
+            pickle.dump(oe_wind, f)
+        with open(MODELS_DIR / 'oe_season.pkl', 'wb') as f:
+            pickle.dump(oe_season, f)
 
     else:
-        loc_map   = joblib.load(MODELS_DIR / 'location_map.pkl')
-        oe_wind   = joblib.load(MODELS_DIR / 'oe_wind.pkl')
-        oe_season = joblib.load(MODELS_DIR / 'oe_season.pkl')
+        with open(MODELS_DIR / 'location_map.pkl', 'rb') as f:
+            loc_map = pickle.load(f)
+        with open(MODELS_DIR / 'oe_wind.pkl', 'rb') as f:
+            oe_wind = pickle.load(f)
+        with open(MODELS_DIR / 'oe_season.pkl', 'rb') as f:
+            oe_season = pickle.load(f)
 
         global_mean = sum(loc_map.values()) / len(loc_map)
         df['Location_encoded'] = df['Location'].map(loc_map).fillna(global_mean)
@@ -137,6 +143,7 @@ def full_pipeline(filepath: str, fit: bool = True) -> tuple:
 
     # Save feature columns order
     if fit:
-        joblib.dump(X.columns.tolist(), MODELS_DIR / 'feature_cols.pkl')
+        with open(MODELS_DIR / 'feature_cols.pkl', 'wb') as f:
+            pickle.dump(X.columns.tolist(), f)
 
     return X, y

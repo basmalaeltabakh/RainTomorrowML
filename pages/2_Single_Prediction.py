@@ -4,8 +4,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 import pandas as pd
-from src.predict import predict_single
 from src.config import MODELS_DIR
+
+try:
+    from src.predict import predict_single
+    PREDICT_AVAILABLE = True
+except ImportError as e:
+    PREDICT_AVAILABLE = False
+    st.error(f"❌ Prediction module not available: {e}")
 
 st.set_page_config(page_title="Single Prediction", page_icon="🔮", layout="wide")
 

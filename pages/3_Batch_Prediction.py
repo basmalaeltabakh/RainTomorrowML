@@ -4,9 +4,23 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-from src.predict import predict_batch
+
+# Safe plotly import
+try:
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    px = None
+
 from src.config import MODELS_DIR
+
+try:
+    from src.predict import predict_batch
+    PREDICT_AVAILABLE = True
+except ImportError as e:
+    PREDICT_AVAILABLE = False
+    st.error(f"❌ Prediction module not available: {e}")
 
 st.set_page_config(page_title="Batch Prediction", page_icon="📂", layout="wide")
 

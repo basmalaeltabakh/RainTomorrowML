@@ -5,9 +5,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-import joblib
+import pickle
+
+# Safe plotly imports
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    px = None
+    go = None
+
 from sklearn.metrics import roc_curve, confusion_matrix, ConfusionMatrixDisplay
 from src.config import MODELS_DIR
 
@@ -30,11 +39,13 @@ def load_results():
 
 @st.cache_resource
 def load_test_data():
-    return joblib.load(MODELS_DIR / 'test_data.pkl')
+    with open(MODELS_DIR / 'test_data.pkl', 'rb') as f:
+        return pickle.load(f)
 
 @st.cache_resource
 def load_model(name):
-    return joblib.load(MODELS_DIR / f'{name}.pkl')
+    with open(MODELS_DIR / f'{name}.pkl', 'rb') as f:
+        return pickle.load(f)
 
 results_df         = load_results()
 X_test, y_test     = load_test_data()

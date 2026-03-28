@@ -1,4 +1,4 @@
-import joblib
+import pickle
 import pandas as pd
 import numpy as np
 from src.config import MODELS_DIR
@@ -11,11 +11,13 @@ def load_model(model_name: str):
     path = MODELS_DIR / f'{model_name}.pkl'
     if not path.exists():
         raise FileNotFoundError(f"Model '{model_name}' not found. Run train.py first.")
-    return joblib.load(path)
+    with open(path, 'rb') as f:
+        return pickle.load(f)
 
 
 def load_feature_cols() -> list:
-    return joblib.load(MODELS_DIR / 'feature_cols.pkl')
+    with open(MODELS_DIR / 'feature_cols.pkl', 'rb') as f:
+        return pickle.load(f)
 
 
 def preprocess_input(df: pd.DataFrame) -> pd.DataFrame:

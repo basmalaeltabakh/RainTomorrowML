@@ -5,12 +5,27 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
-import joblib
+import pickle
+
+# Safe plotly imports
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    go = None
+    px = None
+
 from sklearn.metrics import roc_curve, confusion_matrix, classification_report
 from src.config import MODELS_DIR, DATA_RAW
-from src.predict import predict_batch
+
+try:
+    from src.predict import predict_batch
+    PREDICT_AVAILABLE = True
+except ImportError as e:
+    PREDICT_AVAILABLE = False
+    st.error(f"❌ Prediction module not available: {e}")
 
 st.set_page_config(page_title="Advanced Analytics", page_icon="📈", layout="wide")
 
@@ -33,7 +48,8 @@ st.markdown("""
 @st.cache_data
 def load_data():
     results_df = pd.read_csv(MODELS_DIR / 'results.csv')
-    X_test, y_test = joblib.load(MODELS_DIR / 'test_data.pkl')
+    with open(MODELS_DIR / 'test_data.pkl', 'rb') as f:
+        X_test, y_test = pickle.load(f)
     return results_df, X_test, y_test
 
 results_df, X_test, y_test = load_data()
@@ -62,7 +78,8 @@ if analysis_type == "Model Metrics":
     st.markdown('<div class="section-header">Model Metrics Analysis</div>', unsafe_allow_html=True)
 
     # Load model
-    model = joblib.load(MODELS_DIR / f'{model_name}.pkl')
+    with open(MODELS_DIR / f'{model_name}.pkl', 'rb') as f:
+        model = pickle.load(f)
 
     # Predictions
     y_pred = model.predict(X_test)
@@ -167,7 +184,8 @@ if analysis_type == "Model Metrics":
 elif analysis_type == "Predictions Heatmap":
     st.markdown('<div class="section-header">Prediction Probability Distribution</div>', unsafe_allow_html=True)
 
-    model = joblib.load(MODELS_DIR / f'{model_name}.pkl')
+    with open(MODELS_DIR / f'{model_name}.pkl', 'rb') as f:
+        model = pickle.load(f)
     y_proba = model.predict_proba(X_test)[:, 1]
 
     col1, col2 = st.columns(2)
@@ -207,8 +225,10 @@ elif analysis_type == "Predictions Heatmap":
 elif analysis_type == "Feature Importance":
     st.markdown('<div class="section-header">Feature Importance</div>', unsafe_allow_html=True)
 
-    model = joblib.load(MODELS_DIR / f'{model_name}.pkl')
-    feature_cols = joblib.load(MODELS_DIR / 'feature_cols.pkl')
+    with open(MODELS_DIR / f'{model_name}.pkl', 'rb') as f:
+        model = pickle.load(f)
+    with open(MODELS_DIR / 'feature_cols.pkl', 'rb') as f:
+        feature_cols = pickle.load(f)
 
     # Get feature importance
     if hasattr(model, 'feature_importances_'):
@@ -239,7 +259,8 @@ elif analysis_type == "Feature Importance":
 elif analysis_type == "Error Analysis":
     st.markdown('<div class="section-header">Error Analysis</div>', unsafe_allow_html=True)
 
-    model = joblib.load(MODELS_DIR / f'{model_name}.pkl')
+    with open(MODELS_DIR / f'{model_name}.pkl', 'rb') as f:
+        model = pickle.load(f)
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
 

@@ -5,9 +5,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-import joblib
+import pickle
+
+# Safe plotly imports
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+    px = None
+    go = None
+
 from sklearn.metrics import roc_curve, confusion_matrix, ConfusionMatrixDisplay
 from src.config import MODELS_DIR
 
@@ -30,11 +39,13 @@ def load_results():
 
 @st.cache_resource
 def load_test_data():
-    return joblib.load(MODELS_DIR / 'test_data.pkl')
+    with open(MODELS_DIR / 'test_data.pkl', 'rb') as f:
+        return pickle.load(f)
 
 @st.cache_resource
 def load_model(name):
-    return joblib.load(MODELS_DIR / f'{name}.pkl')
+    with open(MODELS_DIR / f'{name}.pkl', 'rb') as f:
+        return pickle.load(f)
 
 results_df         = load_results()
 X_test, y_test     = load_test_data()
@@ -60,35 +71,41 @@ fig = px.bar(
 )
 fig.update_traces(textposition='outside')
 fig = update_plotly_layout(fig)
-st.plotly_chart(fig, use_container_width=True)
+if PLOTLY_AVAILABLE and fig:
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.dataframe(results_df[[metric, 'model']].sort_values(metric, ascending=False))
 
 st.divider()
 
 # ── ROC Curves ────────────────────────────────────────────────
 st.markdown('<div class="section-header">📈 ROC Curves — All Models</div>', unsafe_allow_html=True)
-fig_roc = go.Figure()
-colors  = px.colors.qualitative.Plotly
+if PLOTLY_AVAILABLE and go is not None:
+    fig_roc = go.Figure()
+    colors  = px.colors.qualitative.Plotly
 
-for i, row in results_df.iterrows():
-    mdl       = load_model(row['model'])
-    y_proba   = mdl.predict_proba(X_test)[:, 1]
-    fpr, tpr, _ = roc_curve(y_test, y_proba)
+    for i, row in results_df.iterrows():
+        mdl       = load_model(row['model'])
+        y_proba   = mdl.predict_proba(X_test)[:, 1]
+        fpr, tpr, _ = roc_curve(y_test, y_proba)
+        fig_roc.add_trace(go.Scatter(
+            x=fpr, y=tpr, name=f"{row['model']} (AUC={row['roc_auc']:.3f})",
+            line=dict(color=colors[i % len(colors)], width=2)
+        ))
+
     fig_roc.add_trace(go.Scatter(
-        x=fpr, y=tpr, name=f"{row['model']} (AUC={row['roc_auc']:.3f})",
-        line=dict(color=colors[i % len(colors)], width=2)
+        x=[0,1], y=[0,1], name='Random',
+        line=dict(color='gray', dash='dash'), showlegend=True
     ))
-
-fig_roc.add_trace(go.Scatter(
-    x=[0,1], y=[0,1], name='Random',
-    line=dict(color='gray', dash='dash'), showlegend=True
-))
-fig_roc.update_layout(
-    xaxis_title='False Positive Rate',
-    yaxis_title='True Positive Rate',
-    height=500
-)
-fig_roc = update_plotly_layout(fig_roc)
-st.plotly_chart(fig_roc, use_container_width=True)
+    fig_roc.update_layout(
+        xaxis_title='False Positive Rate',
+        yaxis_title='True Positive Rate',
+        height=500
+    )
+    fig_roc = update_plotly_layout(fig_roc)
+    st.plotly_chart(fig_roc, use_container_width=True)
+else:
+    st.info("📊 ROC Curves visualization requires plotly")
 
 st.divider()
 

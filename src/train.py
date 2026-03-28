@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import joblib
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -97,14 +97,16 @@ def train_all(data_path: str):
         print(f"AUC={metrics['roc_auc']}  F1={metrics['f1']}")
 
         # Save each model
-        joblib.dump(model, MODELS_DIR / f'{name}.pkl')
+        with open(MODELS_DIR / f'{name}.pkl', 'wb') as f:
+            pickle.dump(model, f)
 
     # Save results summary
     results_df = pd.DataFrame(results).sort_values('roc_auc', ascending=False)
     results_df.to_csv(MODELS_DIR / 'results.csv', index=False)
 
     # Save test sets for comparison page
-    joblib.dump((X_test, y_test), MODELS_DIR / 'test_data.pkl')
+    with open(MODELS_DIR / 'test_data.pkl', 'wb') as f:
+        pickle.dump((X_test, y_test), f)
 
     print("\nDone! Best model:", results_df.iloc[0]['model'])
     print(results_df.to_string(index=False))
