@@ -64,6 +64,14 @@ mask = (df['Location'].isin(locations)) & (df['Year'].between(*years))
 dff = df[mask]
 
 # ────────────────────────────────────────────────────────────────────────
+# Check Plotly Availability
+# ────────────────────────────────────────────────────────────────────────
+if not PLOTLY_AVAILABLE:
+    st.error("❌ This page requires Plotly for visualization.")
+    st.info("📚 Plotly is required for all charts on this page.")
+    st.stop()
+
+# ────────────────────────────────────────────────────────────────────────
 # KPI Cards
 # ────────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">📈 Key Metrics</div>', unsafe_allow_html=True)

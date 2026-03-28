@@ -86,23 +86,29 @@ if uploaded:
         # ── Charts
         col1, col2 = st.columns(2)
         with col1:
-            fig = px.pie(
-                result_df, names='Label',
-                color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
-                title="Prediction Distribution", hole=0.4
-            )
-            fig = update_plotly_layout(fig)
-            st.plotly_chart(fig, use_container_width=True)
+            if PLOTLY_AVAILABLE and px is not None:
+                fig = px.pie(
+                    result_df, names='Label',
+                    color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
+                    title="Prediction Distribution", hole=0.4
+                )
+                fig = update_plotly_layout(fig)
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.dataframe(result_df['Label'].value_counts())
 
         with col2:
-            fig = px.histogram(
-                result_df, x='Probability', nbins=50,
-                color='Label',
-                color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
-                title="Probability Distribution"
-            )
-            fig = update_plotly_layout(fig)
-            st.plotly_chart(fig, use_container_width=True)
+            if PLOTLY_AVAILABLE and px is not None:
+                fig = px.histogram(
+                    result_df, x='Probability', nbins=50,
+                    color='Label',
+                    color_discrete_map={'Rain 🌧️':'#2563EB','No Rain ☀️':'#DC2626'},
+                    title="Probability Distribution"
+                )
+                fig = update_plotly_layout(fig)
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.dataframe(result_df[['Probability', 'Label']])
 
         # ── Table
         st.markdown('<div class="section-header">Results Table</div>', unsafe_allow_html=True)

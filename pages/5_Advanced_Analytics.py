@@ -192,17 +192,20 @@ elif analysis_type == "Predictions Heatmap":
     col1, col2 = st.columns(2)
 
     with col1:
-        # Histogram
-        fig_hist = px.histogram(
-            x=y_proba,
-            nbins=50,
-            title='Prediction Probability Distribution',
-            labels={'x': 'Prediction Probability', 'y': 'Frequency'},
-            color_discrete_sequence=['#3b82f6'],
-            height=400,
-        )
-        fig_hist = update_plotly_layout(fig_hist)
-        st.plotly_chart(fig_hist, use_container_width=True, key='pred_hist_chart')
+        if PLOTLY_AVAILABLE and px is not None:
+            # Histogram
+            fig_hist = px.histogram(
+                x=y_proba,
+                nbins=50,
+                title='Prediction Probability Distribution',
+                labels={'x': 'Prediction Probability', 'y': 'Frequency'},
+                color_discrete_sequence=['#3b82f6'],
+                height=400,
+            )
+            fig_hist = update_plotly_layout(fig_hist)
+            st.plotly_chart(fig_hist, use_container_width=True, key='pred_hist_chart')
+        else:
+            st.write("Histogram visualization requires plotly")
 
     with col2:
         # Statistics

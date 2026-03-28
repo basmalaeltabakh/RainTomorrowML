@@ -50,7 +50,15 @@ def load_model(name):
 results_df         = load_results()
 X_test, y_test     = load_test_data()
 
-# ── Leaderboard ───────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────────────
+# Check Plotly Availability
+# ────────────────────────────────────────────────────────────────────────
+if not PLOTLY_AVAILABLE:
+    st.error("❌ This page requires Plotly for visualization.")
+    st.dataframe(results_df)
+    st.stop()
+
+# ────────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">🥇 Leaderboard</div>', unsafe_allow_html=True)
 styled = style_dataframe(results_df).format({'accuracy':'{:.4f}','f1':'{:.4f}','roc_auc':'{:.4f}'})
 st.markdown(styled.to_html(), unsafe_allow_html=True)
@@ -61,17 +69,17 @@ st.divider()
 st.markdown('<div class="section-header">📊 Metrics Comparison</div>', unsafe_allow_html=True)
 metric = st.radio("Select Metric", ['roc_auc','f1','accuracy'], horizontal=True)
 
-fig = px.bar(
-    results_df.sort_values(metric, ascending=True),
-    x=metric, y='model', orientation='h',
-    color='type',
-    color_discrete_map={'Bagging':'#2563EB','Boosting':'#7C3AED'},
-    text=results_df.sort_values(metric)[metric].round(4),
-    labels={metric: metric.upper(), 'model': 'Model'}
-)
-fig.update_traces(textposition='outside')
-fig = update_plotly_layout(fig)
-if PLOTLY_AVAILABLE and fig:
+if PLOTLY_AVAILABLE and px is not None:
+    fig = px.bar(
+        results_df.sort_values(metric, ascending=True),
+        x=metric, y='model', orientation='h',
+        color='type',
+        color_discrete_map={'Bagging':'#2563EB','Boosting':'#7C3AED'},
+        text=results_df.sort_values(metric)[metric].round(4),
+        labels={metric: metric.upper(), 'model': 'Model'}
+    )
+    fig.update_traces(textposition='outside')
+    fig = update_plotly_layout(fig)
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.dataframe(results_df[[metric, 'model']].sort_values(metric, ascending=False))
