@@ -4,9 +4,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
 import joblib
+
+# Import plotly AFTER streamlit to avoid conflicts
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Plotly not available: {e}")
+    PLOTLY_AVAILABLE = False
 
 # ────────────────────────────────────────────────────────────────────────
 # Page Configuration (MUST BE FIRST)
@@ -103,35 +110,40 @@ with col4:
     st.metric("Accuracy", f"{best_model['accuracy']:.2%}", "Overall")
 
 # ────────────────────────────────────────────────────────────────────────
-# All Models Comparison
+# All Models Comparison (with Plotly if available)
 # ────────────────────────────────────────────────────────────────────────
 st.markdown('### 🏆 All Models Leaderboard', unsafe_allow_html=True)
 
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    # Top models visualization
-    top_models = results_df.nlargest(5, 'roc_auc')
+    if PLOTLY_AVAILABLE:
+        # Top models visualization
+        top_models = results_df.nlargest(5, 'roc_auc')
 
-    fig = px.bar(
-        top_models,
-        x='roc_auc',
-        y='model',
-        orientation='h',
-        color='roc_auc',
-        color_continuous_scale=['#fbbf24', '#60a5fa', '#3b82f6', '#1e40af', '#1e3a8a'],
-        text='roc_auc',
-        title='Top 5 Models by ROC-AUC',
-        height=320,
-    )
-    fig.update_traces(textposition='outside', texttemplate='%{text:.4f}')
-    fig = update_plotly_layout(fig)
-    fig.update_layout(
-        showlegend=False,
-        hovermode='closest',
-        margin=dict(l=0, r=0, t=40, b=0),
-    )
-    st.plotly_chart(fig, use_container_width=True, key='top_models_chart')
+        fig = px.bar(
+            top_models,
+            x='roc_auc',
+            y='model',
+            orientation='h',
+            color='roc_auc',
+            color_continuous_scale=['#fbbf24', '#60a5fa', '#3b82f6', '#1e40af', '#1e3a8a'],
+            text='roc_auc',
+            title='Top 5 Models by ROC-AUC',
+            height=320,
+        )
+        fig.update_traces(textposition='outside', texttemplate='%{text:.4f}')
+        fig = update_plotly_layout(fig)
+        fig.update_layout(
+            showlegend=False,
+            hovermode='closest',
+            margin=dict(l=0, r=0, t=40, b=0),
+        )
+        st.plotly_chart(fig, use_container_width=True, key='top_models_chart')
+    else:
+        top_models = results_df.nlargest(5, 'roc_auc')
+        st.write("**Top 5 Models by ROC-AUC:**")
+        st.dataframe(top_models[['model', 'roc_auc', 'accuracy', 'f1']], use_container_width=True)
 
 with col2:
     st.markdown("""
@@ -159,40 +171,50 @@ results_display['ROC-AUC'] = results_display['ROC-AUC'].apply(lambda x: f"{x:.4f
 st.dataframe(results_display, use_container_width=True)
 
 # ────────────────────────────────────────────────────────────────────────
-# Model Distribution
+# Model Distribution (Fallback if Plotly not available)
 # ────────────────────────────────────────────────────────────────────────
 st.markdown('### 📈 Model Type Distribution', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
-    # Pie chart
-    type_counts = results_df['type'].value_counts()
-    colors = ['#3b82f6', '#8b5cf6']
-    fig_pie = go.Figure(data=[go.Pie(
-        labels=type_counts.index,
-        values=type_counts.values,
-        hole=0.3,
-        marker=dict(colors=colors),
-    )])
-    fig_pie = update_plotly_layout(fig_pie)
-    fig_pie.update_layout(title='Models by Type', height=350)
-    st.plotly_chart(fig_pie, use_container_width=True, key='model_type_chart')
+    if PLOTLY_AVAILABLE:
+        # Pie chart
+        type_counts = results_df['type'].value_counts()
+        colors = ['#3b82f6', '#8b5cf6']
+        fig_pie = go.Figure(data=[go.Pie(
+            labels=type_counts.index,
+            values=type_counts.values,
+            hole=0.3,
+            marker=dict(colors=colors),
+        )])
+        fig_pie = update_plotly_layout(fig_pie)
+        fig_pie.update_layout(title='Models by Type', height=350)
+        st.plotly_chart(fig_pie, use_container_width=True, key='model_type_chart')
+    else:
+        type_counts = results_df['type'].value_counts()
+        st.write("**Models by Type:**")
+        st.bar_chart(type_counts)
 
 with col2:
-    # Metrics comparison
-    fig_metrics = px.box(
-        results_df,
-        y='roc_auc',
-        x='type',
-        color='type',
-        color_discrete_map={'Bagging': '#3b82f6', 'Boosting': '#8b5cf6'},
-        title='ROC-AUC by Type',
-        height=350,
-    )
-    fig_metrics = update_plotly_layout(fig_metrics)
-    fig_metrics.update_layout(showlegend=False)
-    st.plotly_chart(fig_metrics, use_container_width=True, key='auc_distribution_chart')
+    if PLOTLY_AVAILABLE:
+        # Metrics comparison
+        fig_metrics = px.box(
+            results_df,
+            y='roc_auc',
+            x='type',
+            color='type',
+            color_discrete_map={'Bagging': '#3b82f6', 'Boosting': '#8b5cf6'},
+            title='ROC-AUC by Type',
+            height=350,
+        )
+        fig_metrics = update_plotly_layout(fig_metrics)
+        fig_metrics.update_layout(showlegend=False)
+        st.plotly_chart(fig_metrics, use_container_width=True, key='auc_distribution_chart')
+    else:
+        st.write("**ROC-AUC by Type:**")
+        type_auc = results_df.groupby('type')['roc_auc'].apply(list)
+        st.write(type_auc)
 
 # ────────────────────────────────────────────────────────────────────────
 # Footer
