@@ -2,9 +2,9 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
+# Minimal imports first
 import streamlit as st
 import pandas as pd
-import joblib
 
 # Import plotly AFTER streamlit to avoid conflicts
 try:

@@ -4,9 +4,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
-import joblib
+
+# Safe imports with fallbacks
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
 from src.config import MODELS_DIR
 
 # ────────────────────────────────────────────────────────────────────────
