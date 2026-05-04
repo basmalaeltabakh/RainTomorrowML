@@ -17,13 +17,37 @@ except ImportError:
     px = None
     go = None
 
-from sklearn.metrics import roc_curve, confusion_matrix, ConfusionMatrixDisplay
+# Safe sklearn imports
+try:
+    from sklearn.metrics import roc_curve, confusion_matrix, ConfusionMatrixDisplay
+    SKLEARN_AVAILABLE = True
+    CONFUSION_DISPLAY_AVAILABLE = True
+except ImportError:
+    try:
+        from sklearn.metrics import roc_curve, confusion_matrix
+        SKLEARN_AVAILABLE = True
+        CONFUSION_DISPLAY_AVAILABLE = False
+    except ImportError:
+        SKLEARN_AVAILABLE = False
+        CONFUSION_DISPLAY_AVAILABLE = False
+
 from src.config import MODELS_DIR
 
 st.set_page_config(page_title="Model Comparison", page_icon="🏆", layout="wide")
 
 from app.ui_utils import apply_custom_css, update_plotly_layout, style_dataframe
 apply_custom_css()
+
+# Check dependencies
+if not SKLEARN_AVAILABLE:
+    st.error("❌ This page requires scikit-learn for model evaluation metrics.")
+    st.info("📚 scikit-learn is required for confusion matrices and ROC curves.")
+    st.stop()
+
+if not PLOTLY_AVAILABLE:
+    st.error("❌ This page requires Plotly for visualization.")
+    st.info("📚 Plotly is required for all charts on this page.")
+    st.stop()
 
 st.markdown("""
 <div class="header-container">

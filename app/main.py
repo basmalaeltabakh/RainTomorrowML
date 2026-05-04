@@ -4,8 +4,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 import pandas as pd
-
-# Safe imports with fallbacks
 try:
     import plotly.graph_objects as go
     import plotly.express as px
@@ -27,9 +25,6 @@ st.set_page_config(
 
 from app.ui_utils import apply_custom_css, update_plotly_layout, style_dataframe
 apply_custom_css()
-# ────────────────────────────────────────────────────────────────────────
-# Removed Custom CSS block - Now using app.ui_utils
-# ────────────────────────────────────────────────────────────────────────
 
 # ────────────────────────────────────────────────────────────────────────
 # Header

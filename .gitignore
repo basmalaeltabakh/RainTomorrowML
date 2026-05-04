@@ -31,15 +31,19 @@ ENV/
 Thumbs.db
 *.bak
 
-# Data
+# Data - Exception: Track essential demo data
 Data/Raw/*.csv
+!Data/Raw/.gitkeep
 Data/processed/*.csv
+!Data/processed/.gitkeep
 data/raw/*.csv
 data/processed/*.csv
 
-# Models
+# Models - Exception: Track essential trained models for demos
 models/*.pkl
 models/*.joblib
+!models/.gitkeep
+!models/results.csv
 
 # CatBoost
 catboost_info/

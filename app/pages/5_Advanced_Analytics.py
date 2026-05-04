@@ -17,20 +17,36 @@ except ImportError:
     go = None
     px = None
 
-from sklearn.metrics import roc_curve, confusion_matrix, classification_report
+# Safe sklearn imports
+try:
+    from sklearn.metrics import roc_curve, confusion_matrix, classification_report
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+
 from src.config import MODELS_DIR, DATA_RAW
 
 try:
     from src.predict import predict_batch
     PREDICT_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     PREDICT_AVAILABLE = False
-    st.error(f"❌ Prediction module not available: {e}")
 
 st.set_page_config(page_title="Advanced Analytics", page_icon="📈", layout="wide")
 
 from app.ui_utils import apply_custom_css, update_plotly_layout
 apply_custom_css()
+
+# Check dependencies
+if not SKLEARN_AVAILABLE:
+    st.error("❌ This page requires scikit-learn for model evaluation metrics.")
+    st.info("📚 scikit-learn is required for ROC curves and classification reports.")
+    st.stop()
+
+if not PLOTLY_AVAILABLE:
+    st.error("❌ This page requires Plotly for visualization.")
+    st.info("📚 Plotly is required for all charts on this page.")
+    st.stop()
 
 # ────────────────────────────────────────────────────────────────────────
 # Header
@@ -47,9 +63,21 @@ st.markdown("""
 # ────────────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    results_df = pd.read_csv(MODELS_DIR / 'results.csv')
-    with open(MODELS_DIR / 'test_data.pkl', 'rb') as f:
-        X_test, y_test = pickle.load(f)
+    try:
+        results_df = pd.read_csv(MODELS_DIR / 'results.csv')
+    except FileNotFoundError:
+        st.error(f"❌ Model results file not found at: {MODELS_DIR / 'results.csv'}")
+        st.info("📁 Please ensure `models/results.csv` exists")
+        st.stop()
+    
+    try:
+        with open(MODELS_DIR / 'test_data.pkl', 'rb') as f:
+            X_test, y_test = pickle.load(f)
+    except FileNotFoundError:
+        st.error(f"❌ Test data file not found at: {MODELS_DIR / 'test_data.pkl'}")
+        st.info("📁 Please ensure `models/test_data.pkl` exists")
+        st.stop()
+    
     return results_df, X_test, y_test
 
 results_df, X_test, y_test = load_data()
